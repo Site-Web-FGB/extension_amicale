@@ -24,7 +24,7 @@ Il s'agit d'une extension pour navigateur web qui permet de télécharger le tro
 
 ## Utilisation
 
-1. Une fois l'extension installée, naviguez vers la page "Annuaire" du site de l'amicale.
+1. Une fois l'extension installée, naviguez vers la page "RESEAU" du site de l'amicale.
 2. Un bouton "Trombinoscope" apparaît en bas à droite de la page. Cliquez dessus pour lancer le téléchargement du trombinoscope.
 3. Pour consulter les anniversaires du jour, cliquez sur l'icône de l'extension dans la barre d'outils du navigateur.
 
