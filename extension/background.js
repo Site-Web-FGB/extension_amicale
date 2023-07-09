@@ -102,6 +102,11 @@ if (typeof browser === 'undefined') {
          anniv_du_jour(sendResponse); // le bouton est cliqué, donc on télécharge les données
          return true; // return true pour pouvoir utiliser la fonctionn
       }
+
+      if(msg === "anniv_du_mois"){
+         get_anniversaires_du_mois(sendResponse);
+         return true;
+      }
    });
 } else {
    function handleMessage(msg, sender, sendResponse) {
@@ -113,6 +118,11 @@ if (typeof browser === 'undefined') {
       if (msg === 'annivs') {
          anniv_du_jour(sendResponse); // le bouton est cliqué, donc on télécharge les données
          return true; // return true pour pouvoir utiliser la fonctionn
+      }
+
+      if(msg === "anniv_du_mois"){
+         get_anniversaires_du_mois(sendResponse);
+         return true;
       }
    }
 
@@ -153,7 +163,7 @@ function get_trombinoscope(sendResponse) {
                      writeToPdf(user, doc, index, base64Img);
                   });
                   doc.save('trombinscope.pdf');
-                  sendResponse("finished");
+                  sendResponse("finished_trombi");
                });
             } catch (e) {
                sendResponse("error");
@@ -186,6 +196,119 @@ function convertImgToDataURL(url, callback) {
       canvas = null;
    };
    img.src = url;
+}
+
+
+
+function get_anniversaires_du_mois(sendResponse) {
+   if (!getBody) {
+      var xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      xhr.addEventListener("readystatechange", function () {
+         if (this.readyState === 4) {
+            try {
+               var response = JSON.parse(this.responseText);
+               var infos = response["hits"];
+               const doc = new jsPDF("p", "mm", "a4");
+               doc.setFont("Times-Roman");
+               doc.setFontSize(10);
+               anniversaires_du_mois_to_pdf(doc, infos);
+               sendResponse("finished_anniv");
+            } catch (e) {
+               sendResponse("error");
+            }
+         }
+      });
+      xhr.open("POST", API_URL);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+      xhr.send(data);
+   } else {
+      alert("Erreur:", "Veuillez rafraîchir la page");
+   }
+}
+
+function anniversaires_du_mois_to_pdf(doc, users){
+   var dateObj = new Date();
+   var current_month = dateObj.getUTCMonth() + 1;
+
+   var save = false;
+   lineCount = 0;
+   maxLinesPerPage = 45;
+   line_h = 20;
+   startX = 15;
+   columnSpacing = 80;
+
+   var birthdaysByDay = new Map();
+
+   users.forEach(function (user, index) {
+      var birthday = user["birthday"].toString();
+      var year = birthday.substring(0, 4);
+      var month = birthday.substring(4, 6);
+      var day = birthday.substring(6, 8);
+
+      month = parseInt(month);
+      day = parseInt(day);
+
+      if(month == current_month){
+
+         var name = user["firstname"] + " " + user["lastname"];
+         var promo = user[promotion] != derniere_promo ? user[promotion] - base_year_repr + base_year : new Date().getFullYear();
+         var mail = user["mail"] != null ? user["mail"] : "";
+         var tel = "";
+         if (user["phoneMobile"].toString() > 0) {
+            var tel = "+" + user["phoneMobile"].toString();
+         }
+
+         birthday = `${day}/${month}/${year}`;
+
+         n_b = birthday + " " + name;
+
+
+         var birthdayData = {
+            n_b: n_b,
+            promo: promo,
+            mail: mail,
+            tel: tel
+         };
+
+         if (birthdaysByDay.has(day)) {
+            birthdaysByDay.get(day).push(birthdayData);
+         } else {
+            birthdaysByDay.set(day, [birthdayData]);
+         }
+      }
+      
+   });
+
+   if(birthdaysByDay.size > 0){
+
+      var sortedDays = Array.from(birthdaysByDay.keys()).sort((a, b) => a - b);
+
+      sortedDays.forEach(function (day) {
+         users = birthdaysByDay.get(day);
+         users.forEach(function (user) {
+            var n_b = user.n_b;
+            var promo = user.promo;
+            var mail = user.mail;
+            var tel = user.tel;
+
+            doc.text(`${n_b} (${promo})`, startX, line_h);
+            doc.text(mail, startX + columnSpacing + 10, line_h);
+            doc.text(tel, startX + 2*columnSpacing, line_h);
+
+            if (lineCount + 1 > maxLinesPerPage) {
+               doc.addPage();
+               lineCount = 0;
+               line_h = 20;
+            }
+
+            line_h = line_h + 6;
+            lineCount++;
+         });
+      });
+
+      doc.save('anniversaires_du_mois.pdf');
+   }
 }
 
 
@@ -271,11 +394,11 @@ function anniv_du_jour(sendResponse) {
        xhr.addEventListener("readystatechange", function () {
            if (this.readyState === 4) {
                try {
-               var response = JSON.parse(this.responseText);
-               var infos = response["hits"];
-               sendResponse(infos);
+                  var response = JSON.parse(this.responseText);
+                  var infos = response["hits"];
+                  sendResponse(infos);
                } catch (e) {
-               sendResponse("error");
+                  sendResponse("error");
                }
            }
        });
