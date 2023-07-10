@@ -42,7 +42,7 @@ Pour toute question ou problème, veuillez ouvrir une issue sur ce dépôt.
 
 ## Version
 
-Version actuelle : 1.2
+Version actuelle : 1.3
 
 ## Note
 
