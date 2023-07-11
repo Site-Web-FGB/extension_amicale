@@ -1,7 +1,7 @@
 function getButton(text, bottom, funct){
 	var button = document.createElement("Button");
 	button.innerHTML = text;
-	button.style = "cursor: pointer; bottom:" + bottom + "%;right:5%;position:absolute;z-index: 9999; width: 160px; height: 70px; font-size: 18px; font-weight: bold; color: white; background-color: #19c20a; border: 1px solid #19c20a; border-radius: 24px;";
+	button.style = "cursor: pointer; bottom:" + bottom + "px;right:5%;position:absolute;z-index: 9999; width: 160px; height: 70px; font-size: 18px; font-weight: bold; color: white; background-color: #19c20a; border: 1px solid #19c20a; border-radius: 24px;";
 	button.style.boxShadow = "0 1px 2px rgb(0,0,0,0.15)";
 	button.style.transition = "all 0.15s ease-in-out";
 	button.onclick = funct;
@@ -19,11 +19,35 @@ function getButton(text, bottom, funct){
 	return button;
 }
 
-var trombi = getButton("Trombinoscope", 25, trombinoscope);
-var anniv_du_mois = getButton("Anniversaires du mois", 15, anniversaires);
+
+var selectList = document.createElement("select");
+selectList.id = "moisExtension";
+selectList.style = "bottom: 220px; right: 5%;position:absolute;z-index: 9999; width: 160px; height: 30px;border: 1px solid #19c20a;"
+
+var dateObj = new Date();
+var current_month = dateObj.getUTCMonth() + 1;
+
+for (var i = 1; i <= 12; i++) {
+    var option = document.createElement("option");
+    option.value = i;
+    option.text = i;
+	if(i === current_month){
+        option.selected = true;
+    }
+    selectList.appendChild(option);
+}
+
+
+
+
+var trombi = getButton("Trombinoscope", 300, trombinoscope);
+var anniv_du_mois = getButton("Anniversaires du mois", 150, anniversaires);
 
 document.body.appendChild(trombi);
+document.body.appendChild(selectList);
 document.body.appendChild(anniv_du_mois);
+
+
 
 // function trombinoscope() {
 // 	button.onclick = () => {};
@@ -49,11 +73,14 @@ function trombinoscope() {
 function anniversaires() {
 	anniv_du_mois.onclick = () => {};
 	anniv_du_mois.innerHTML = "Téléchargement ...";
+
+	var mois = document.getElementById("moisExtension").value;
+
 	//check if browser is chrome or firefox
 	if (typeof browser === "undefined") {
-		chrome.runtime.sendMessage('anniv_du_mois', handleResponse);
+		chrome.runtime.sendMessage(`anniv_du_mois_${mois}`, handleResponse);
 	} else {
-		browser.runtime.sendMessage('anniv_du_mois').then(handleResponse);
+		browser.runtime.sendMessage(`anniv_du_mois_${mois}`).then(handleResponse);
 	}
 }
 

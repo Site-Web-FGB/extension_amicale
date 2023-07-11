@@ -6,7 +6,6 @@ var getBody = true;
 const base_year_repr = 451992; // c'est l'année 1987
 const base_year = 1987;
 
-
 //Ajouter manuellement ici le numéro correspondant à la promo de chaque année
 const promos_hors_regle = {
    "494185" : "2022",
@@ -38,6 +37,8 @@ const height = 297; //mm
 
 // Ecoute l'appel qui est fait vers l'API de l'asso-connect et récupère les données envoyées dans le "body" de l'appel
 var extraInfoSpec = ['requestBody'];
+
+var current_month;
 
 if (typeof browser === 'undefined') {
    chrome.webRequest.onBeforeRequest.addListener(
@@ -125,7 +126,8 @@ if (typeof browser === 'undefined') {
          return true; // return true pour pouvoir utiliser la fonctionn
       }
 
-      if(msg === "anniv_du_mois"){
+      if(msg.substring(0, 13) === "anniv_du_mois"){
+         current_month = msg.substring(14, msg.length);
          get_anniversaires_du_mois(sendResponse);
          return true;
       }
@@ -233,9 +235,6 @@ function get_anniversaires_du_mois(sendResponse) {
 }
 
 function anniversaires_du_mois_to_pdf(doc, users){
-   var dateObj = new Date();
-   var current_month = dateObj.getUTCMonth() + 1;
-
    lineCount = 0;
    maxLinesPerPage = 45;
    line_h = 20;
@@ -312,7 +311,7 @@ function anniversaires_du_mois_to_pdf(doc, users){
          });
       });
 
-      doc.save('anniversaires_du_mois.pdf');
+      doc.save(`anniversaires_du_mois_${current_month}.pdf`);
    }
 }
 
