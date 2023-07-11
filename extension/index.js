@@ -47,17 +47,6 @@ document.body.appendChild(trombi);
 document.body.appendChild(selectList);
 document.body.appendChild(anniv_du_mois);
 
-
-
-// function trombinoscope() {
-// 	button.onclick = () => {};
-// 	console.log("Téléchargement en cours ...");
-// 	button.innerHTML = "Téléchargement ...";
-// 	// browser.runtime.sendMessage('trombinoscope').then(handleResponse);
-// 	//send runtime message to background.js for chrome browser
-// 	chrome.runtime.sendMessage('trombinoscope', handleResponse);
-// }
-
 // functiion to send message to background.js for chrome browser
 function trombinoscope() {
 	trombi.onclick = () => {};
@@ -90,22 +79,21 @@ function anniversaires() {
 
 
 function handleResponse(response) {
+
 	if (chrome.runtime.lastError) {
 		// Something went wrong
 		console.warn(chrome.runtime.lastError.message);
 		return;
 	}
-	console.log("response" + response);
+
 	if (response === "finished_trombi") {
 		trombi.onclick = trombinoscope;
 		trombi.innerHTML = "Trombinoscope";
-		alert("Téléchargement terminé");
 	}
 
 	if (response === "finished_anniv") {
 		anniv_du_mois.onclick = anniversaires;
 		anniv_du_mois.innerHTML = "Anniversaires du mois";
-		alert("Téléchargement terminé");
 	}
 
 	if(response === "error"){

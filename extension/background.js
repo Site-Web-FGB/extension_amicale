@@ -109,7 +109,8 @@ if (typeof browser === 'undefined') {
          return true; // return true pour pouvoir utiliser la fonctionn
       }
 
-      if(msg === "anniv_du_mois"){
+      if(msg.substring(0, 13) === "anniv_du_mois"){
+         current_month = msg.substring(14, msg.length);
          get_anniversaires_du_mois(sendResponse);
          return true;
       }
@@ -383,11 +384,13 @@ function alert(title, msg) {
          message: msg,
          title: title
       });
-   } else browser.notifications.create({
-      type: 'basic',
-      message: msg,
-      title: title
-   });
+   } else{
+      browser.notifications.create({
+         type: 'basic',
+         message: msg,
+         title: title
+      });
+   }
 }
 
 
