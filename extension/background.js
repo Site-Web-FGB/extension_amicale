@@ -17,6 +17,21 @@ const poste_actuel = "info118";
 const nom_entreprise = "info19";
 const img_base_url = "https://amicale-fondationbesse.assoconnect.com/membres/photo/";
 
+const nr_to_month = {
+	1 : "janvier",
+	2 : "février",
+	3 : "mars", 
+	4 : "avril",
+	5 : "mai",
+	6 : "juin",
+	7 : "juillet",
+	8 : "août",
+	9 : "septembre",
+	10 : "octobre",
+	11 : "novembre",
+	12 : "décembre"
+}
+
 //convertit les raccourcis des noms de pays en noms explicites
 let regionNames = new Intl.DisplayNames(['fr'], { type: 'region' });
 
@@ -312,7 +327,7 @@ function anniversaires_du_mois_to_pdf(doc, users){
          });
       });
 
-      doc.save(`anniversaires_du_mois_${current_month}.pdf`);
+      doc.save(`anniversaires_du_mois_${nr_to_month[current_month]}.pdf`);
    }
 }
 
