@@ -6,6 +6,8 @@ var getBody = true;
 const base_year_repr = 451992; // c'est l'année 1987
 const base_year = 1987;
 
+
+//Ajouter manuellement ici le numéro correspondant à la promo de chaque année
 const promos_hors_regle = {
    "494185" : "2022",
    "602530" : "2023"
