@@ -6,7 +6,10 @@ var getBody = true;
 const base_year_repr = 451992; // c'est l'année 1987
 const base_year = 1987;
 
-const derniere_promo = 494185;
+const promos_hors_regle = {
+   "494185" : "2022",
+   "602530" : "2023"
+}
 
 const promotion = "info117"; //dans le json c'est un entier qui n'a pas la valeur de l'année. On va donc la comparer à base_year_repr
 const poste_actuel = "info118";
@@ -231,7 +234,6 @@ function anniversaires_du_mois_to_pdf(doc, users){
    var dateObj = new Date();
    var current_month = dateObj.getUTCMonth() + 1;
 
-   var save = false;
    lineCount = 0;
    maxLinesPerPage = 45;
    line_h = 20;
@@ -252,7 +254,8 @@ function anniversaires_du_mois_to_pdf(doc, users){
       if(month == current_month){
 
          var name = user["firstname"] + " " + user["lastname"];
-         var promo = user[promotion] != derniere_promo ? user[promotion] - base_year_repr + base_year : new Date().getFullYear();
+         var promo = user[promotion] in promos_hors_regle ? promos_hors_regle[user[promotion]] : user[promotion] - base_year_repr + base_year;
+
          var mail = user["mail"] != null ? user["mail"] : "";
          var tel = "";
          if (user["phoneMobile"].toString() > 0) {
@@ -332,7 +335,7 @@ function writeToPdf(user, doc, index, base64Img) {
 
    var name = user["firstname"] + " " + user["lastname"];
    var mail = user["mail"] != null ? user["mail"] : "";
-   var promo = user[promotion] != derniere_promo ? user[promotion] - base_year_repr + base_year : new Date().getFullYear();
+   var promo = user[promotion] in promos_hors_regle ? promos_hors_regle[user[promotion]] : user[promotion] - base_year_repr + base_year;
 
    var tel = "";
    if (user["phoneMobile"].toString() > 0) {
