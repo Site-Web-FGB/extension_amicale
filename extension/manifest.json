@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Trombinoscope et Anniversaires du jour",
 	"version": "1.7",
-	"description": "Extension web qui permet de télécharger le trombinoscope directement sur le site de l'amicale. Egalement, cette extension permet d'afficher les anniversaires du jour.",
+	"description": "Cette extension est exclusivement destinée à une utilisation sur le site web de l'Amicale de la Fondation Georges Besse, accessible à l'adresse https://amicale-fondationbesse.assoconnect.com/ Elle offre les fonctionnalités suivantes :\n- Télécharger le trombinoscope des lauréats de la Fondation Georges Besse au format PDF.\n- Afficher les anniversaires du jour des lauréats de la Fondation Georges Besse. Pour que l'extension fonctionne correctement, il est nécessaire de respecter les prérequis suivants :\n- Être lauréat de la Fondation Georges Besse.\n- Posséder un compte au sein de l'Amicale de la Fondation Georges Besse.\n- Être connecté sur le site de l'Amicale de la Fondation Georges Besse avec son compte amical.",
 	"content_scripts": [
 		{
 			"matches": ["*://amicale-fondationbesse.assoconnect.com/page/1511200-annuaire*"],
