@@ -158,6 +158,8 @@ if (typeof browser === 'undefined') {
 
 function get_trombinoscope(sendResponse) {
    if (!getBody) {
+      //list d'users à exclure (firstname lastname)
+      var excluded_list = ['Administrateur ADMINISTRATEUR', 'Arnaud DE BOURAYNE', 'Sylvie NEDELEC', 'Françoise NICOLAS']
       var xhr = new XMLHttpRequest();
       xhr.withCredentials = true;
       xhr.addEventListener("readystatechange", function () {
@@ -183,7 +185,11 @@ function get_trombinoscope(sendResponse) {
                Promise.all(promises).then(function (results) {
                   results.forEach(function (base64Img, index) {
                      user = infos[index];
-                     writeToPdf(user, doc, index, base64Img);
+                     console.log(user);
+                     //writeToPdf si l'utilisateur n'est pas dans la liste des exclusions
+                     console.log(user["firstname"] + " " + user["lastname"]);
+                     if (!excluded_list.includes(user["firstname"] + " " + user["lastname"]))
+                        writeToPdf(user, doc, index, base64Img);
                   });
                   doc.save('trombinscope.pdf');
                   sendResponse("finished_trombi");
@@ -381,6 +387,8 @@ function writeToPdf(user, doc, index, base64Img) {
    doc.text(pst_actuel, x_center, photo_y + 60, "center");
    doc.text(entreprise, x_center, photo_y + 65 + 3.5 * pst_actuel.length, "center");
 
+   // ajout du Pays
+   doc.text(country, x_center, photo_y + 70 + 3.5 * pst_actuel.length + 3.5 * entreprise.length, "center");
 
 }
 
