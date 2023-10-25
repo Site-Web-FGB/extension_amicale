@@ -185,9 +185,7 @@ function get_trombinoscope(sendResponse) {
                Promise.all(promises).then(function (results) {
                   results.forEach(function (base64Img, index) {
                      user = infos[index];
-                     console.log(user);
                      //writeToPdf si l'utilisateur n'est pas dans la liste des exclusions
-                     console.log(user["firstname"] + " " + user["lastname"]);
                      if (!excluded_list.includes(user["firstname"] + " " + user["lastname"]))
                         writeToPdf(user, doc, index, base64Img);
                   });
