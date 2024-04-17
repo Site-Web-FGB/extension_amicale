@@ -111,44 +111,31 @@ lorsqu'on clique le bouton "Trombinoscope"
 
 // handle message for chrome browser
 //check if is chrome browser or firefox browser
-if (typeof browser === 'undefined') {
-   chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-      console.log("received message: " + msg + " from " + sender);
-      if (msg === 'trombinoscope') {
-         get_trombinoscope(sendResponse); // le bouton est cliqué, donc on télécharge les données
-         return true; // return true pour pouvoir utiliser la fonctionn
-      }
-
-      if (msg === 'annivs') {
-         anniv_du_jour(sendResponse); // le bouton est cliqué, donc on télécharge les données
-         return true; // return true pour pouvoir utiliser la fonctionn
-      }
-
-      if(msg.substring(0, 13) === "anniv_du_mois"){
-         current_month = msg.substring(14, msg.length);
-         get_anniversaires_du_mois(sendResponse);
-         return true;
-      }
-   });
-} else {
-   function handleMessage(msg, sender, sendResponse) {
-      if (msg === 'trombinoscope') {
-         get_trombinoscope(sendResponse); // le bouton est cliqué, donc on télécharge les données
-         return true; // return true pour pouvoir utiliser la fonction sendResponse qui envoie une réponse à index.js concernant l'état du téléchargement
-      }
-
-      if (msg === 'annivs') {
-         anniv_du_jour(sendResponse); // le bouton est cliqué, donc on télécharge les données
-         return true; // return true pour pouvoir utiliser la fonctionn
-      }
-
-      if(msg.substring(0, 13) === "anniv_du_mois"){
-         current_month = msg.substring(14, msg.length);
-         get_anniversaires_du_mois(sendResponse);
-         return true;
-      }
+// Fonction pour gérer les messages
+function handleMessage(msg, sender, sendResponse) {
+   if (msg === 'trombinoscope') {
+      get_trombinoscope(sendResponse);
+      return true;
    }
 
+   if (msg === 'annivs') {
+      anniv_du_jour(sendResponse);
+      return true;
+   }
+
+   if (msg.substring(0, 13) === "anniv_du_mois") {
+      current_month = msg.substring(14, msg.length);
+      get_anniversaires_du_mois(sendResponse);
+      return true;
+   }
+}
+
+// Vérifie si c'est Chrome ou Firefox
+if (typeof browser === 'undefined') {
+   // Si c'est Chrome, utilisez chrome.runtime
+   chrome.runtime.onMessage.addListener(handleMessage);
+} else {
+   // Si c'est Firefox, utilisez browser.runtime
    browser.runtime.onMessage.addListener(handleMessage);
 }
 
@@ -157,7 +144,8 @@ if (typeof browser === 'undefined') {
 
 
 function get_trombinoscope(sendResponse) {
-   if (!getBody) {
+   console.log("get_trombinoscope");
+      if (!getBody) {
       //list d'users à exclure (firstname lastname)
       var excluded_list = ['Administrateur ADMINISTRATEUR', 'Arnaud DE BOURAYNE', 'Sylvie NEDELEC', 'Françoise NICOLAS']
       var xhr = new XMLHttpRequest();
@@ -180,6 +168,8 @@ function get_trombinoscope(sendResponse) {
                      });
                   });
                });
+
+   
 
 
                Promise.all(promises).then(function (results) {
@@ -208,22 +198,51 @@ function get_trombinoscope(sendResponse) {
 
 
 
+// function convertImgToDataURL(url, callback) {
+//    var img = new Image();
+//    img.crossOrigin = 'Anonymous';
+//    img.onload = function () {
+//       console.log("image loaded");
+//       var canvas = document.createElement('CANVAS');
+//       var ctx = canvas.getContext('2d');
+//       var dataURL;
+//       canvas.height = this.height;
+//       canvas.width = this.width;
+//       ctx.drawImage(this, 0, 0);
+//       dataURL = canvas.toDataURL("image/jpeg");
+//       callback(dataURL);
+//       canvas = null;
+//    };
+//    img.src = url;
+// }
+
 function convertImgToDataURL(url, callback) {
    var img = new Image();
    img.crossOrigin = 'Anonymous';
    img.onload = function () {
+      console.log("image loaded");
       var canvas = document.createElement('CANVAS');
       var ctx = canvas.getContext('2d');
       var dataURL;
       canvas.height = this.height;
       canvas.width = this.width;
       ctx.drawImage(this, 0, 0);
-      dataURL = canvas.toDataURL("image/jpeg");
-      callback(dataURL);
+      try {
+         dataURL = canvas.toDataURL("image/jpeg");
+         callback(dataURL);
+      } catch (error) {
+         console.error("Error converting image to data URL:", error);
+         callback(null, error); // Appel du rappel avec null et l'erreur pour indiquer une erreur
+      }
       canvas = null;
+   };
+   img.onerror = function () {
+      console.error("Error loading image");
+      callback(null); // Appel du rappel avec null pour indiquer une erreur de chargement
    };
    img.src = url;
 }
+
 
 
 
@@ -372,11 +391,24 @@ function writeToPdf(user, doc, index, base64Img) {
    var street2 = user["street2"];
    var postal = user["postal"];
    var city = user["city"];
-   var country = user["country"] != null ? regionNames.of(user["country"]) : "";
+  
+   try {
+      var country = user["country"] != null ? regionNames.of(user["country"]) : "";
+   } catch (error) {
+      console.error("Error with country: ", user["country"]);
+      var country = "";
+   }
+   
 
-   var adresse = street1 != null ? `${street1}, ${street2 != null ? street2 : ""}, ${postal}, ${city}, ${country}` : "";
+   // var adresse = street1 != null ? `${street1}, ${street2 != null ? street2 : ""}, ${postal}, ${city}, ${country}` : "";
 
-   doc.addImage(base64Img, x_center - 15, photo_y, wi, he);
+   if (base64Img != null && base64Img.startsWith("data:image")) {
+      // base64Img est probablement une image valide
+      doc.addImage(base64Img, x_center - 15, photo_y, wi, he);
+   } //else {
+   //    // base64Img n'est pas une image valide
+   //    console.error("base64Img n'est pas une image valide");
+   // }
    doc.text(name, x_center, photo_y + 40, "center");
    doc.text(`Promotion: ${promo}`, x_center, photo_y + 45, "center");
    doc.text(mail, x_center, photo_y + 50, "center");
