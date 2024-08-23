@@ -145,7 +145,7 @@ if (typeof browser === 'undefined') {
 
 
 function get_trombinoscope(sendResponse) {
-   console.log("get_trombinoscope");
+   //console.log("get_trombinoscope");
       if (!getBody) {
       //list d'users à exclure (firstname lastname)
       var excluded_list = ['Administrateur ADMINISTRATEUR', 'Arnaud DE BOURAYNE', 'Sylvie NEDELEC', 'Françoise NICOLAS']
@@ -221,7 +221,7 @@ function convertImgToDataURL(url, callback) {
    var img = new Image();
    img.crossOrigin = 'Anonymous';
    img.onload = function () {
-      console.log("image loaded");
+      //console.log("image loaded");
       var canvas = document.createElement('CANVAS');
       var ctx = canvas.getContext('2d');
       var dataURL;
@@ -388,10 +388,10 @@ function writeToPdf(user, doc, index, base64Img) {
    var entreprise = user[nom_entreprise] != null ? user[nom_entreprise] : "";
    var entreprise = doc.splitTextToSize(entreprise, 90);
 
-   var street1 = user["street1"];
-   var street2 = user["street2"];
-   var postal = user["postal"];
-   var city = user["city"];
+   // var street1 = user["street1"];
+   // var street2 = user["street2"];
+   // var postal = user["postal"];
+   // var city = user["city"];
   
    try {
       var country = user["country"] != null ? regionNames.of(user["country"]) : "";
