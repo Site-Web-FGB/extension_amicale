@@ -9,7 +9,8 @@ const base_year = 1987;
 //Ajouter manuellement ici le numéro correspondant à la promo de chaque année
 const promos_hors_regle = {
    "494185" : "2022",
-   "602530" : "2023"
+   "602530" : "2023",
+   "774135" : "2024"
 }
 
 const promotion = "info117"; //dans le json c'est un entier qui n'a pas la valeur de l'année. On va donc la comparer à base_year_repr
